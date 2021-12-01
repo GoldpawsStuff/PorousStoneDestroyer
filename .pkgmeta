@@ -1,8 +1,8 @@
-package-as: ChatCleaner
+package-as: PorousStoneDestroyer
 enable-nolib-creation: no
 
 move-folders:
-    ChatCleaner/ChatCleaner: ChatCleaner
+    PorousStoneDestroyer/PorousStoneDestroyer: PorousStoneDestroyer
 
 manual-changelog:
     filename: CHANGELOG.md
