@@ -34,6 +34,7 @@ local _G = _G
 local table_wipe = table.wipe
 
 -- WoW API
+local C_Item = C_Item
 local DeleteCursorItem = DeleteCursorItem
 local GetContainerItemID = GetContainerItemID
 local GetContainerNumSlots = GetContainerNumSlots
@@ -77,6 +78,10 @@ end
 
 Button.OnEnable = function(self)
 	self:SetScript("OnClick", Button.OnClick)
+	self:SetScript("OnEnter", Button.OnEnter)
+	self:SetScript("OnLeave", Button.OnLeave)
+	self:SetScript("OnHide", Button.OnLeave)
+	self:SetScript("OnShow", Button.OnMouseOver)
 end
 
 Button.OnInitialize = function(self)
@@ -99,6 +104,44 @@ Button.OnInitialize = function(self)
 	self.Icon:SetMask(Path.."actionbutton-mask-circular.tga")
 	self.Icon:SetTexture(3764219) -- https://www.wowhead.com/item=171840/porous-stone
 
+	self.Label1 = self.Label1 or self:CreateFontString()
+	self.Label1:SetDrawLayer("OVERLAY")
+	self.Label1:SetPoint("BOTTOM", self, "TOP", 0, 0)
+	self.Label1:SetJustifyH("CENTER")
+	self.Label1:SetJustifyV("MIDDLE")
+	self.Label1:SetFontObject(Game16Font)
+	self.Label1:SetFont(Game16Font:GetFont(), 15, "OUTLINE")
+	self.Label1:SetText(DELETE)
+	self.Label1:SetTextColor(.85,.85,.85,.85)
+
+	self.Label2 = self.Label2 or self:CreateFontString()
+	self.Label2:SetDrawLayer("OVERLAY")
+	self.Label2:SetPoint("TOP", self, "BOTTOM", 0, 0)
+	self.Label2:SetJustifyH("CENTER")
+	self.Label2:SetJustifyV("MIDDLE")
+	self.Label2:SetFontObject(Game16Font)
+	self.Label2:SetFont(Game16Font:GetFont(), 15, "OUTLINE")
+	self.Label2:SetText((C_Item.GetItemNameByID(171840)))
+	self.Label2:SetTextColor(.85,.85,.85,.85)
+	
+end
+
+Button.OnEnter = function(self)
+	self.Label1:Show()
+	self.Label2:Show()
+end
+
+Button.OnLeave = function(self)
+	self.Label1:Hide()
+	self.Label2:Hide()
+end
+
+Button.OnMouseOver = function(self)
+	if (self:IsMouseOver()) then
+		self:OnEnter()
+	else
+		self:OnLeave()
+	end
 end
 
 Frame.DeleteContainerConfirm = function(self)
