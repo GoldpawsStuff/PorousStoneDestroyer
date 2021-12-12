@@ -121,7 +121,6 @@ Button.OnInitialize = function(self)
 	self.Label2:SetJustifyV("MIDDLE")
 	self.Label2:SetFontObject(Game16Font)
 	self.Label2:SetFont(Game16Font:GetFont(), 15, "OUTLINE")
-	self.Label2:SetText((C_Item.GetItemNameByID(171840)))
 	self.Label2:SetTextColor(.85,.85,.85,.85)
 	
 end
@@ -129,6 +128,11 @@ end
 Button.OnEnter = function(self)
 	self.Label1:Show()
 	self.Label2:Show()
+
+	-- Item info is not always available on login,
+	-- so to avoid us getting caught in limbo with no text,
+	-- we add it to the mouseover event instead.
+	self.Label2:SetText((C_Item.GetItemNameByID(171840))) 
 end
 
 Button.OnLeave = function(self)
