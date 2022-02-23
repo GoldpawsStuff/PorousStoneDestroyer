@@ -70,7 +70,11 @@ Button.OnClick = function(self)
 			if (itemID) and (BlacklistedItem[itemID]) then 
 				ClearCursor()
 				PickupContainerItem(bag,slot)
-				DeleteCursorItem() -- Protected, needs a hardware event.
+				-- Protected, needs a hardware event.
+				-- Note that this only works for a single item slot per click,
+				-- so we need to exit after the first hit, and run it again.
+				DeleteCursorItem() 
+				return 
 			end 
 		end 
 	end
@@ -103,6 +107,15 @@ Button.OnInitialize = function(self)
 	self.Icon:SetPoint("BOTTOMRIGHT", -11, 11)
 	self.Icon:SetMask(Path.."actionbutton-mask-circular.tga")
 	self.Icon:SetTexture(3764219) -- https://www.wowhead.com/item=171840/porous-stone
+
+	self.Count = self.Count or self:CreateFontString()
+	self.Count:SetDrawLayer("OVERLAY")
+	self.Count:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -10, 10)
+	self.Count:SetJustifyH("RIGHT")
+	self.Count:SetJustifyV("BOTTOM")
+	self.Count:SetFontObject(Game18Font)
+	self.Count:SetFont(Game18Font:GetFont(), 18, "OUTLINE")
+	self.Count:SetTextColor(.85,.85,.85,.85)
 
 	self.Label1 = self.Label1 or self:CreateFontString()
 	self.Label1:SetDrawLayer("OVERLAY")
@@ -185,20 +198,25 @@ Frame.DeleteContainerConfirm = function(self)
 end
 
 Frame.ParseContainerGarbage = function(self)
-	local show
+	local numSlots = 0
 	for bag = 0,4,1 do
 		for slot = 1,GetContainerNumSlots(bag),1 do 
 			local itemID = GetContainerItemID(bag, slot)
 			if (itemID) and (BlacklistedItem[itemID]) then 
-				show = true
-				break
+				numSlots = numSlots + 1
 			end 
 		end 
 	end
-	if (show) and (not Button:IsShown()) then
+	if (numSlots > 0) and (not Button:IsShown()) then
 		Button:Show()
-	elseif (not show) and (Button:IsShown()) then
+		if (numSlots > 1) then
+			Button.Count:SetFormattedText("%d",numSlots)
+		else
+			Button.Count:SetText("")
+		end
+	elseif (not numSlots) and (Button:IsShown()) then
 		Button:Hide()
+		Button.Count:SetText("")
 	end
 end
 
