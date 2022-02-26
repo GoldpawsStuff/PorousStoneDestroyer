@@ -214,7 +214,7 @@ Frame.ParseContainerGarbage = function(self)
 		else
 			Button.Count:SetText("")
 		end
-	elseif (not numSlots) and (Button:IsShown()) then
+	elseif (numSlots == 0) and (Button:IsShown()) then
 		Button:Hide()
 		Button.Count:SetText("")
 	end

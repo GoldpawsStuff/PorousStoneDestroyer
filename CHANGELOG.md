@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.8-Release] 2022-02-26
+### Fixed
+- Fixed an issue where the addon forgot to hide the button after destroying all Porous Stone.
+
 ## [1.0.7-Release] 2022-02-23
 - ToC bump.
 
