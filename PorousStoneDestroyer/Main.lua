@@ -36,17 +36,17 @@ local table_wipe = table.wipe
 -- WoW API
 local C_Item = C_Item
 local DeleteCursorItem = DeleteCursorItem
-local GetContainerItemID = GetContainerItemID
-local GetContainerNumSlots = GetContainerNumSlots
-local PickupContainerItem = PickupContainerItem
+local GetContainerItemID = C_Container.GetContainerItemID
+local GetContainerNumSlots = C_Container.GetContainerNumSlots
+local PickupContainerItem = C_Container.PickupContainerItem
 
 -- WoW Objects
 local StaticPopupDialogs = StaticPopupDialogs
 
 -- Blacklisted items
--- Currently only set up for Porous Stone, 
+-- Currently only set up for Porous Stone,
 -- but you can in theory add any itemID to it.
--- Also, no, I will not write any system for 
+-- Also, no, I will not write any system for
 -- users to add custom items in-game to this list.
 local BlacklistedItem = {
 	[171840] = true -- Porous Stone
@@ -65,18 +65,18 @@ Button.OnClick = function(self)
 		return
 	end
 	for bag = 0,4,1 do
-		for slot = 1,GetContainerNumSlots(bag),1 do 
+		for slot = 1,GetContainerNumSlots(bag),1 do
 			local itemID = GetContainerItemID(bag, slot)
-			if (itemID) and (BlacklistedItem[itemID]) then 
+			if (itemID) and (BlacklistedItem[itemID]) then
 				ClearCursor()
 				PickupContainerItem(bag,slot)
 				-- Protected, needs a hardware event.
 				-- Note that this only works for a single item slot per click,
 				-- so we need to exit after the first hit, and run it again.
-				DeleteCursorItem() 
-				return 
-			end 
-		end 
+				DeleteCursorItem()
+				return
+			end
+		end
 	end
 end
 
@@ -135,7 +135,7 @@ Button.OnInitialize = function(self)
 	self.Label2:SetFontObject(Game16Font)
 	self.Label2:SetFont(Game16Font:GetFont(), 15, "OUTLINE")
 	self.Label2:SetTextColor(.85,.85,.85,.85)
-	
+
 end
 
 Button.OnEnter = function(self)
@@ -145,7 +145,7 @@ Button.OnEnter = function(self)
 	-- Item info is not always available on login,
 	-- so to avoid us getting caught in limbo with no text,
 	-- we add it to the mouseover event instead.
-	self.Label2:SetText((C_Item.GetItemNameByID(171840))) 
+	self.Label2:SetText((C_Item.GetItemNameByID(171840)))
 end
 
 Button.OnLeave = function(self)
@@ -171,28 +171,28 @@ Frame.DeleteContainerConfirm = function(self)
 			break
 		end
 	end
-	if (not popup) then 
-		return 
+	if (not popup) then
+		return
 	end
 
 	local editBox = _G[popup:GetName() .. "EditBox"]
-	if (editBox and editBox:IsShown()) then 
+	if (editBox and editBox:IsShown()) then
 		editBox:Hide()
 
 		local button = _G[popup:GetName() .. "Button1"]
 		button:Enable()
 
-		if (not popup.link) then 
+		if (not popup.link) then
 			popup.link = popup:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 			popup.link:SetPoint("CENTER", editBox)
 			popup.link:Hide()
 			popup:HookScript("OnHide", function() popup.link:Hide() end)
-		end 
+		end
 
 		popup.link:SetText((select(3, GetCursorInfo())))
 		popup.link:Show()
 
-	elseif (popup.link) then 
+	elseif (popup.link) then
 		popup.link:Hide()
 	end
 end
@@ -200,12 +200,12 @@ end
 Frame.ParseContainerGarbage = function(self)
 	local numSlots = 0
 	for bag = 0,4,1 do
-		for slot = 1,GetContainerNumSlots(bag),1 do 
+		for slot = 1,GetContainerNumSlots(bag),1 do
 			local itemID = GetContainerItemID(bag, slot)
-			if (itemID) and (BlacklistedItem[itemID]) then 
+			if (itemID) and (BlacklistedItem[itemID]) then
 				numSlots = numSlots + 1
-			end 
-		end 
+			end
+		end
 	end
 	if (numSlots > 0) and (not Button:IsShown()) then
 		Button:Show()
@@ -220,11 +220,11 @@ Frame.ParseContainerGarbage = function(self)
 	end
 end
 
-Frame.OnEvent = function(self, event, ...) 
-	if (event == "UNIT_INVENTORY_CHANGED") then 
+Frame.OnEvent = function(self, event, ...)
+	if (event == "UNIT_INVENTORY_CHANGED") then
 		local unitID = ...
-		if (unitID ~= "player") then 
-			return 
+		if (unitID ~= "player") then
+			return
 		end
 	end
 	if (event == "DELETE_ITEM_CONFIRM") then
@@ -236,20 +236,20 @@ end
 
 Frame.OnUpdate = function(self, elapsed)
 	self.elapsed = (self.elapsed or 0) + elapsed
-	if (self.elapsed > 10) then 
+	if (self.elapsed > 10) then
 		self.elapsed = nil
 		self:Hide()
 		self:SetScript("OnUpdate", nil)
 		self:OnEnable()
-	end 
+	end
 end
 
 Frame.OnEnable = function(self)
 	Button:OnEnable()
 	self:SetScript("OnEvent", Frame.OnEvent)
-	self:RegisterEvent("BAG_UPDATE") 
-	self:RegisterEvent("BAG_UPDATE_DELAYED") 
-	self:RegisterEvent("UNIT_INVENTORY_CHANGED") 
+	self:RegisterEvent("BAG_UPDATE")
+	self:RegisterEvent("BAG_UPDATE_DELAYED")
+	self:RegisterEvent("UNIT_INVENTORY_CHANGED")
 	self:RegisterEvent("DELETE_ITEM_CONFIRM")
 	self:ParseContainerGarbage()
 end
